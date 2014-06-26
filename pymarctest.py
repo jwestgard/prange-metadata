@@ -28,7 +28,8 @@ def pretty_print(leader, fields):
 
 def read_data():
     record_set = {}
-    with open('bib.mrc', 'rb') as fh:
+    inputfile = input("Enter the name of the MARC file to read: ")
+    with open(inputfile, 'rb') as fh:
         reader = MARCReader(fh, force_utf8=True)
         for record in reader:
             mydict = record.as_dict()
