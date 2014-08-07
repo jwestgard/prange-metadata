@@ -19,18 +19,8 @@
 # MODULE IMPORTS
 #-------------------
 
-from __future__ import print_function
 from pymarc import MARCReader
 import json, csv, sys
-
-
-#-------------------
-# CLASSES
-#-------------------
-
-class SilentDevice():
-    def write(self, s):
-        pass
 
 
 #-------------------
@@ -49,7 +39,6 @@ def pretty_print(leader, fields):
 
 def read_marc(filename):
     result = []
-    print("\nWorking...", end="")
     with open(filename, 'rb') as fh:
         reader = MARCReader(fh, force_utf8=True)
         count = 0
@@ -65,8 +54,9 @@ def read_marc(filename):
 def read_spreadsheet(filename):
     with open(filename, 'r') as f:
         result = []
-        input_data = csv.DictReader(f)
+        input_data = csv.DictReader(f, delimiter="\t")
         for num, row in enumerate(input_data):
+            print(row)
             row.update({'filename': filename, 'line': num + 1})
             result.append(row)
         return result
@@ -98,24 +88,48 @@ def data_stats(data):
     print("Records: {0}".format(len(data)))
     print("852h nos: {0}".format(len(ids)))
     return ids, nocall
-    
+
+def expand(par, ch):
+    if isinstance(ch, dict):
+        for key in ch.keys():
+            expand(key, ch[key])
+    elif isinstance(ch, list):
+        for item in ch:
+            expand(ch, item)
+    elif isinstance(ch, str):
+        print("{0}: {1}".format(par, ch))
+
 def flatten(rec):
-    result = {'leader': rec['leader']}
+    flat_record = []
+    flat_record.append(("Leader", rec['leader']))
     for field in rec['fields']:
-        for key in field.keys():
-            result.update({key: field[key]})
-    return result
-
-            #if isinstance(field[key], str):
-            #    fields.update(field)
-            #elif isinstance(field[key], dict):
-            #    for subfield in field[key]['subfields']:
-            #        for subcode in subfield.keys():
-            #            fields[(key+subcode)] = subfield[subcode]
+        for k, v in field.items():
+            if isinstance(v, str):
+                flat_record.append((k, v))
+            elif isinstance(v, dict):
+                for subfield in v['subfields']:
+                    for sk, sv in subfield.items():
+                        flat_record.append((k + sk, subfield[sk]))
+    return flat_record
     
-
 def match_data_to_marc():
     pass
+
+#----------------------------
+# DATA MANIPULATION FUNCTIONS
+#----------------------------  
+
+def remove_brackets(field):
+    return field.strip([ "[", "]" ])
+
+def transform_author_field(field):
+    for eterm in ["編", "編纂", "編集", "編輯"]:
+        if eterm in field:
+            return field
+
+
+# editor = 編, 編纂, 編集, 編輯
+# author = 著
 
 
 #-------------------
@@ -132,16 +146,16 @@ def main():
         sheet_data = read_spreadsheet(f)
         print("{0} rows read!".format(len(sheet_data)))
         master_data_list.extend(sheet_data)
-    
     print("\nSpreadsheet data read, {0} rows loaded.".format(len(master_data_list)))
-    print("\nLoading spreadsheet data...\n")
+    #print("\nLoading MARC file ", end="")
+    #marc_data = read_marc(marc_filename)
+    #print("\n\nMARC file read; {0} records loaded!".format(len(marc_data)))
     
-    marc_recs = read_marc(marc_filename)
-
-    print("\nMARC data read, {0} rows loaded.".format(len(marc_recs)))
-    
-    for rec in marc_recs:
-        print(rec)
+    all_columns = set()
+    for row in master_data_list:
+        all_columns.update(row.keys())
+    for col in sorted(all_columns):
+        print(col)
 
 if __name__ == '__main__':
     main()
