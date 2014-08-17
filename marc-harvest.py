@@ -56,7 +56,6 @@ def read_spreadsheet(filename):
         result = []
         input_data = csv.DictReader(f, delimiter="\t")
         for num, row in enumerate(input_data):
-            print(row)
             row.update({'filename': filename, 'line': num + 1})
             result.append(row)
         return result
@@ -151,15 +150,15 @@ def main():
         print("{0} rows read!".format(len(sheet_data)))
         master_data_list.extend(sheet_data)
     print("\nSpreadsheet data read, {0} rows loaded.".format(len(master_data_list)))
-    #print("\nLoading MARC file ", end="")
-    #marc_data = read_marc(marc_filename)
-    #print("\n\nMARC file read; {0} records loaded!".format(len(marc_data)))
+    print("\nLoading MARC file ", end="")
+    marc_data = read_marc(marc_filename)
+    print("\n\nMARC file read; {0} records loaded!".format(len(marc_data)))
     
-    all_columns = set()
-    for row in master_data_list:
-        all_columns.update(row.keys())
-    for col in sorted(all_columns):
-        print(col)
+    #all_columns = set()
+    #for row in master_data_list:
+    #    all_columns.update(row.keys())
+    #for col in sorted(all_columns):
+    #    print(col)
 
 if __name__ == '__main__':
     main()
