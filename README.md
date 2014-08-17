@@ -1,13 +1,13 @@
 # Prange Metadata Harvest and Manipulation Program
 
 ## Description
-A program to process and validate metadata spreadsheets, pulling additional data from MARC records using pymarc.Box
+A program to process and validate metadata spreadsheets, pulling additional data from MARC records using pymarc.
 
 ##Data Paths
-~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/csv/
+{code}~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/csv/
 ~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/excel/
 ~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/marc/
-~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/tsv/
+~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/tsv/{code}
 
 ## Pseudocode
 
