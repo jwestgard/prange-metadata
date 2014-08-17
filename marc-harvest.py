@@ -67,9 +67,9 @@ def write_output(filename):
             outfile.write(num + "\n")
 
 
-#------------------------
-# DATA HANDLING FUNCTIONS
-#------------------------
+#---------------------------
+# DATA ANALYSIS AND MATCHING
+#---------------------------
 
 def data_stats(data):
     ids = []
@@ -115,6 +115,7 @@ def flatten(rec):
 def match_data_to_marc():
     pass
 
+
 #----------------------------
 # DATA MANIPULATION FUNCTIONS
 #----------------------------  
@@ -122,14 +123,17 @@ def match_data_to_marc():
 def remove_brackets(field):
     return field.strip([ "[", "]" ])
 
+# Normalize the author field so it includes the author's name only
+# Japanese terms for editor = 編, 編纂, 編集, 編輯
+# Japanese word for author = 著
+
 def transform_author_field(field):
     for eterm in ["編", "編纂", "編集", "編輯"]:
         if eterm in field:
-            return field
-
-
-# editor = 編, 編纂, 編集, 編輯
-# author = 著
+            result = field.replace(eterm, "")
+        else:
+            result = field
+    return result
 
 
 #-------------------

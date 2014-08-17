@@ -1,0 +1,4 @@
+~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/csv/
+~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/excel/
+~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/marc/
+~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/tsv/
