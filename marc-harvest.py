@@ -54,7 +54,7 @@ def read_marc(filename):
 def read_spreadsheet(filename):
     with open(filename, 'r') as f:
         result = []
-        input_data = csv.DictReader(f, delimiter="\t")
+        input_data = csv.DictReader(f, delimiter=",")
         for num, row in enumerate(input_data):
             row.update({'filename': filename, 'line': num + 1})
             result.append(row)
@@ -145,14 +145,21 @@ def main():
     inputfiles = [f for f in sys.argv[2:]]
     print("\nLoading spreadsheet data...\n")
     for f in inputfiles:
-        print("Reading {0}... ".format(f), end="")
+        print("\n\nReading {0}... ".format(f), end="")
         sheet_data = read_spreadsheet(f)
         print("{0} rows read!".format(len(sheet_data)))
+        print("{} columns in sheet!\n".format(len(sheet_data[0])))
+        for key in sheet_data[0].keys():
+            print(key) 
+            
+        
         master_data_list.extend(sheet_data)
     print("\nSpreadsheet data read, {0} rows loaded.".format(len(master_data_list)))
     print("\nLoading MARC file ", end="")
     marc_data = read_marc(marc_filename)
     print("\n\nMARC file read; {0} records loaded!".format(len(marc_data)))
+    
+    
     
     #all_columns = set()
     #for row in master_data_list:
