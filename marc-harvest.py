@@ -20,7 +20,7 @@
 #-------------------
 
 from pymarc import MARCReader
-import json, csv, sys
+import json, csv, sys, re
 
 
 #-------------------
@@ -126,13 +126,36 @@ def remove_brackets(field):
 # Japanese terms for editor = 編, 編纂, 編集, 編輯
 # Japanese word for author = 著
 
-def transform_author_field(field):
+def remove_author_editor_terms(field):
     for eterm in ["編", "編纂", "編集", "編輯"]:
         if eterm in field:
             result = field.replace(eterm, "")
+        elif "著" in field:
+            result = field.replace("著", "")
         else:
             result = field
     return result
+
+def remove_yen_abbreviation(field):
+    if "Y" in field:
+        result = field.replace("Y", "")
+    else:
+        result = field
+    return result
+
+def sum_page_counts(field):
+    m = re.search(r'.+p\.', field)
+    if m:
+        total = sum([int(d) for d in re.findall(r'\d+', m.group())])
+        return total
+
+def move_dimensions_info(field):
+    m = re.search(";( )?\d+( )?(x \d+)?( )?cm(\.)?", field)
+    if m:
+        return m.group().replace(";", "").strip()
+
+def remove_Japanese_dates(field):
+    pass
 
 
 #-------------------
@@ -151,14 +174,26 @@ def main():
         print("{} columns in sheet!\n".format(len(sheet_data[0])))
         for key in sheet_data[0].keys():
             print(key) 
-            
-        
         master_data_list.extend(sheet_data)
     print("\nSpreadsheet data read, {0} rows loaded.".format(len(master_data_list)))
+    
+    for num, record in enumerate(master_data_list):
+        print("\nRecord #{0}".format(num))
+        print("  {0} => {1}".format(record['author1-jp'],
+                                    remove_author_editor_terms(record['author1-jp'])))
+        print("  {0} => {1}".format(record['price'],
+                                  remove_yen_abbreviation(record['price'])))
+        print("  {0} => {1}".format(record['pages'],
+                                  sum_page_counts(record['pages'])))
+        print("  {0} => {1}".format(record['pages'],
+                                  move_dimensions_info(record['pages'])))
+        
     print("\nLoading MARC file ", end="")
     marc_data = read_marc(marc_filename)
-    print("\n\nMARC file read; {0} records loaded!".format(len(marc_data)))
-    
+    print("\n\nMARC file read; {0} records loaded!".format(len(marc_data))) 
+
+    for x in range(100):
+        print(x)
     
     
     #all_columns = set()
