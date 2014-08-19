@@ -1,4 +1,4 @@
-# Prange Metadata Harvest and Manipulation Program
+# Prange Metadata Harvesting and Manipulation Program
 
 ## Description
 A program to process and validate metadata spreadsheets, pulling additional data from MARC records using pymarc.
@@ -10,7 +10,6 @@ A program to process and validate metadata spreadsheets, pulling additional data
     ~/Box\ Sync/PrangeMetadataStuff/CSV-data-conversion/tsv/
 
 ## Pseudocode
-
 1. Read Spredsheet Data.
 2. Load MARC file into array using pymarc.
 3. Check Spreadsheet Header Rows Against One Another.
@@ -27,9 +26,10 @@ A program to process and validate metadata spreadsheets, pulling additional data
 5. Remove the Y abbreviation for Yen.
 
 ## Subject Terms Matching
-1. Compare call no. from spreadsheet against field 852h (where multiple call nos. in Aleph, check each one; if only one match is found, trust the match.
+1. Compare call no. from spreadsheet against field 852h (where multiple call nos. in Aleph, check each one); if only one match is found, trust the match.
 2. If no match found, try matching 852i or combined 852h + i.
-3. If no match found, try removing volume info.
+3. If no match found, try matchign after removing volume info from call no.
 4. If no match found, try matching on Author/Title.
-5. If multiple matches found, flag.
-6. Output report of all matches by each of the various methods, as well as a list of unmatched records from the spreadsheets.
+5. If multiple matches found, flag record for follow up.
+6. Output a report of all matches by each of the various methods, as well as a list of unmatched records from the spreadsheets.
+
