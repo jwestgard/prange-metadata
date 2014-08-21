@@ -166,19 +166,38 @@ def main():
     master_data_list = []
     marc_filename = sys.argv[1]
     inputfiles = [f for f in sys.argv[2:]]
-    print("\nLoading spreadsheet data...\n")
+    print("\nLoading spreadsheet data...")
     for f in inputfiles:
-        print("\n\nReading {0}... ".format(f), end="")
+        print("\nReading {0}... ".format(f), end="")
         sheet_data = read_spreadsheet(f)
         print("{0} rows read!".format(len(sheet_data)))
-        print("{} columns in sheet!\n".format(len(sheet_data[0])))
-        for key in sheet_data[0].keys():
-            print(key) 
+        print("{} columns in sheet!\n".format(len(sheet_data[0]))) 
         master_data_list.extend(sheet_data)
     print("\nSpreadsheet data read, {0} rows loaded.".format(len(master_data_list)))
     
+    spreadsheet_ids = [(rec['filename'], rec['line'], rec['id']) for rec in master_data_list]
+    for line in spreadsheet_ids:
+        print(line)
+    
+    print("\nReading MARC records... ", end="")
+    with open(marc_filename, 'rb') as mf:
+        matches = {}
+        reader = MARCReader(mf, force_utf8=True)
+        for rec in reader:
+            possible_ids = rec.get_fields('852')
+            for i in possible_ids:
+                try:
+                    for line in spreadsheet_ids:
+                        alt = re.sub(r'v_\d+', '', i['h'])
+                        if (line[2] == i['h']) or (line[2] == alt):
+                            matches[line] = i['h']
+                except:
+                    pass
+        print(matches)
+        print(len(matches.keys()))
+    
     for num, record in enumerate(master_data_list):
-        print("\nRecord #{0}".format(num))
+        print("\nRecord #{0}".format(num + 1))
         print("  {0} => {1}".format(record['author1-jp'],
                                     remove_author_editor_terms(record['author1-jp'])))
         print("  {0} => {1}".format(record['price'],
@@ -187,20 +206,10 @@ def main():
                                   sum_page_counts(record['pages'])))
         print("  {0} => {1}".format(record['pages'],
                                   move_dimensions_info(record['pages'])))
-        
-    print("\nLoading MARC file ", end="")
-    marc_data = read_marc(marc_filename)
-    print("\n\nMARC file read; {0} records loaded!".format(len(marc_data))) 
-
-    for x in range(100):
-        print(x)
+        if record['id'] in matches.keys():
+            print("  {0} => MATCH".format(record['id']))
+        else:
+            print("  {0} => NOT FOUND".format(record['id']))
     
-    
-    #all_columns = set()
-    #for row in master_data_list:
-    #    all_columns.update(row.keys())
-    #for col in sorted(all_columns):
-    #    print(col)
-
 if __name__ == '__main__':
     main()
